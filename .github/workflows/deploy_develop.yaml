@@ -2,15 +2,17 @@
 # because artifacts are not externally available
 # until the end of their workflow.
 name: Deploy develop.element.io
+concurrency: deploy_develop
 on:
   workflow_run:
-    workflows: [ "Build" ]
+    workflows: [ "Build and upload sourcemaps to Sentry" ]
     types:
       - completed
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request'
+    environment: develop
+    if: github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Find Artifact ID
         uses: actions/github-script@v3.1.0
@@ -43,13 +45,11 @@ jobs:
           env: Develop
           ref: ${{ github.head_ref }}
 
-      # TODO update things
       - name: Notify the redeploy script
         uses: distributhor/workflow-webhook@v2
         env:
-          GITHUB_EVENT_NAME: "io.element.deploy_develop"
-          webhook_url: https://test.tun.bit.ovh/
-          webhook_secret: FooBar
+          webhook_url: ${{ secrets.DEVELOP_DEPLOY_WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.DEVELOP_DEPLOY_WEBHOOK_SECRET }}
           data: '{"url": "${{ steps.find_artifact.outputs.result }}"}'
 
       - name: Update deployment status
