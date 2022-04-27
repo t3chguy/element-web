@@ -18,15 +18,17 @@ jobs:
         with:
           result-encoding: string
           script: |
+            var owner = context.repo.owner;
+            var repo = context.repo.repo;
             var artifacts = await github.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
+               owner,
+               repo,
                run_id: ${{ github.event.workflow_run.id }},
             });
             var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "previewbuild"
             })[0];
-            return matchArtifact.id;
+            return `https://api.github.com/repos/${owner}/${repo}/actions/artifacts/${matchArtifact.id}/zip`;
 
       - name: Create Deployment
         uses: bobheadxi/deployments@v1
@@ -36,7 +38,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           env: Develop
           ref: ${{ github.head_ref }}
-          payload: '{"artifact_id": "${{ steps.find_artifact.outputs.result }}"}'
+          payload: '{"url": "${{ steps.find_artifact.outputs.result }}"}'
 
       - name: Update deployment status
         uses: bobheadxi/deployments@v1
