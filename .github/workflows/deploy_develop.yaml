@@ -1,7 +1,7 @@
 # Triggers after the Build has finished,
 # because artifacts are not externally available
 # until the end of their workflow.
-name: Build
+name: Deploy develop.element.io
 on:
   workflow_run:
     workflows: [ "Build" ]
