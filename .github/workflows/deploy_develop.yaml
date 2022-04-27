@@ -38,7 +38,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           env: Develop
           ref: ${{ github.head_ref }}
-          payload: '{"url": "${{ steps.find_artifact.outputs.result }}"}'
+
+      # TODO update things
+      - name: Notify the redeploy script
+        uses: distributhor/workflow-webhook@v2
+        env:
+          GITHUB_EVENT_NAME: "io.element.deploy_develop"
+          webhook_url: https://test.tun.bit.ovh/
+          webhook_secret: FooBar
+          data: '{"url": "${{ steps.find_artifact.outputs.result }}"}'
 
       - name: Update deployment status
         uses: bobheadxi/deployments@v1
