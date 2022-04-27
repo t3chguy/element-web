@@ -18,17 +18,31 @@ jobs:
         with:
           result-encoding: string
           script: |
-            var owner = context.repo.owner;
-            var repo = context.repo.repo;
-            var artifacts = await github.actions.listWorkflowRunArtifacts({
-               owner,
-               repo,
-               run_id: ${{ github.event.workflow_run.id }},
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const artifacts = await github.actions.listWorkflowRunArtifacts({
+                owner,
+                repo,
+                run_id: ${{ github.event.workflow_run.id }},
             });
-            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "previewbuild"
+            const matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+                return artifact.name == "previewbuild"
             })[0];
-            return `https://api.github.com/repos/${owner}/${repo}/actions/artifacts/${matchArtifact.id}/zip`;
+
+            const result = await github.request({
+                ...github.actions.downloadArtifact.endpoint({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    artifact_id: matchArtifact.id,
+                    archive_format: 'zip',
+                }),
+                headers: {
+                    authorization: "Bearer ${{ secrets.GITHUB_TOKEN }}",
+                },
+                // We don't need to download the artifact here, only follow redirects
+                method: "HEAD",
+            });
+            return result.url;
 
       - name: Create Deployment
         uses: bobheadxi/deployments@v1
