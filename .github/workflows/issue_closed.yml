@@ -120,9 +120,12 @@ jobs:
               }
             }
 
+            console.log("Duplicate of: ", duplicateOf);
+            console.log("Found rageshakes: ", rageshakes);
+
             if (duplicateOf.size) {
               const body = Array.from(duplicateOf).join("\n");
-            
+
               // Comment on all rageshakes to create relationship to the issue this was closed as duplicate of
               for (const rageshake of rageshakes) {
                 github.rest.issues.createComment({
