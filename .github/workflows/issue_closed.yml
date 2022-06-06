@@ -27,12 +27,7 @@ jobs:
                       node {
                         __typename
                         ... on MarkedAsDuplicateEvent {
-                          actor {
-                            login
-                          }
-                          isCrossRepository
                           canonical {
-                            __typename
                             ... on Issue {
                               repository {
                                 nameWithOwner
@@ -48,12 +43,7 @@ jobs:
                           }
                         }
                         ... on UnmarkedAsDuplicateEvent {
-                          actor {
-                            login
-                          }
-                          isCrossRepository
                           canonical {
-                            __typename
                             ... on Issue {
                               repository {
                                 nameWithOwner
@@ -69,12 +59,7 @@ jobs:
                           }
                         }
                         ... on CrossReferencedEvent {
-                          actor {
-                            login
-                          }
-                          isCrossRepository
                           source {
-                            __typename
                             ... on Issue {
                               repository {
                                 nameWithOwner
@@ -103,6 +88,8 @@ jobs:
             const RAGESHAKE_REPO = "element-web-rageshakes";
             const rageshakes = new Set();
             const duplicateOf = new Set();
+
+            console.log("Edges: ", JSON.stringify(edges));
 
             for (const { node } of edges) {
               switch(node.__typename) {
