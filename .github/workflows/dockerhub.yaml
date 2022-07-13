@@ -6,7 +6,7 @@ on:
 concurrency: ${{ github.ref }}
 jobs:
   buildx:
-    name: Build artifacts
+    name: Docker Buildx
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,7 +15,6 @@ jobs:
         uses: docker/setup-qemu-action@v1
 
       - name: Set up Docker Buildx
-        id: buildx
         uses: docker/setup-buildx-action@v2
         with:
           install: true
@@ -41,7 +40,7 @@ jobs:
         with:
           context: .
           push: true
-          platforms: ${{ steps.buildx.outputs.platforms }}
+          platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
