@@ -56,6 +56,11 @@ jobs:
 
             - name: Build deb package
               run: |
+                  set -x
+                  ls -lah debian/tmp/
+                  ls -lah debian/tmp/usr/share/
+                  ls -lah debian/tmp/usr/share/element-web
+
                   VERSION=$(cat package.json | jq -r .version)
                   sudo chmod -R u=rw,go=r debian/tmp/usr/share/element-web/
                   dpkg-gencontrol -v"$VERSION" -ldebian/tmp/DEBIAN/changelog
